@@ -10,27 +10,33 @@ export class Circle{
         this.smallRadius = 80;
         this.menuList = menuList;
         this.menuIdx = 0;
+        this.eventAngle = 0;
+        this.eventAngleIncrease = 1;
+        this.mouseWheelDownFlag = false;
 
     }
+
+  
 
 
 
     // PI 180 도
     circleDraw(ctx){
+        ctx.clearRect(0,0,this.stageWidth*2,this.stageHeight*2)
         ctx.font = '32px "Shadows Into Light"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         // 45 45 90
-        const startAngle_1 = Math.PI * 5/4;
-        const endAngle_1 =   Math.PI * 7/4;
-        const startAngle_2 = Math.PI * 7/4;
-        const endAngle_2 =   Math.PI * 1/4;
-        const startAngle_3 = Math.PI * 1/4;
-        const endAngle_3 =   Math.PI * 3/4;
+        const startAngle_1 = Math.PI/180 * (225 + this.eventAngle); 
+        const endAngle_1 =   Math.PI/180 * (315 + this.eventAngle);
+        const startAngle_2 = Math.PI/180 * (315 + this.eventAngle);
+        const endAngle_2 =   Math.PI/180 * (45 + this.eventAngle);
+        const startAngle_3 = Math.PI/180 * (45 + this.eventAngle);
+        const endAngle_3 =   Math.PI/180 * (135 + this.eventAngle);
         // 회전을 위한 안보이는 4번째 부분
-        const startAngle_4 =   Math.PI * 3/4; 
-        const endAngle_4 =   Math.PI * 5/4; 
+        const startAngle_4 =   Math.PI/180 * (135 + this.eventAngle); 
+        const endAngle_4 =   Math.PI/180 * (225 + this.eventAngle);
         const harfRadius = (this.radius - this.smallRadius) / 2 ;
         const menu_1 = this.menuList[this.menuIdx];
         this.menuIdxPlus();
@@ -38,8 +44,18 @@ export class Circle{
         this.menuIdxPlus();
         const menu_3 = this.menuList[this.menuIdx];
         this.menuIdxPlus();
-
-    
+        const menu_4 = this.menuList[this.menuIdx];
+        this.menuIdxPlus();
+        const imageSize = { width: 400 , height : 400};
+        let menu_1_x = this.getCircleX(-90 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius) ,this.x);
+        let menu_1_y = this.getCirCleY(-90 + this.eventAngle, ((this.radius - this.smallRadius)/2 + this.smallRadius), this.y ) ;
+        let menu_2_x = this.getCircleX(0 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius), this.x);
+        let menu_2_y = this.getCirCleY(0 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius), this.y);
+        let menu_3_x = this.getCircleX(90 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius) ,this.x);
+        let menu_3_y = this.getCirCleY(90 + this.eventAngle, ((this.radius - this.smallRadius)/2 + this.smallRadius), this.y ) ;
+        let menu_4_x = this.getCircleX(180 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius), this.x);
+        let menu_4_y = this.getCirCleY(180 + this.eventAngle,((this.radius - this.smallRadius)/2 + this.smallRadius), this.y );
+        
 
         const smallCircle_startAngle_xy_1 = this.coordinate(this.x,this.y,startAngle_1,this.smallRadius);
         const smallCircle_endAngle_xy_1 = this.coordinate(this.x,this.y,endAngle_1,this.smallRadius);
@@ -52,80 +68,90 @@ export class Circle{
 
         if(menu_1.type === "image"){
 
-            const img = new Image();
+            const img = menu_1.img;
+        
+            ctx.save();
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_1,endAngle_1);  
+            ctx.lineTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
+            ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
+            ctx.moveTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
+            ctx.closePath();
+            ctx.clip();            
+            ctx.stroke();
             
-            img.src = menu_1.src
-            img.onload = () => {
-                ctx.save();
-                ctx.beginPath()
-                ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
-                ctx.arc(this.x,this.y,this.radius ,startAngle_1,endAngle_1);  
-                ctx.lineTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
-                ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
-                ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
-                ctx.moveTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
-                ctx.closePath();
-                ctx.clip();            
-                ctx.stroke();
-                
-                const gradient = ctx.createLinearGradient(0,0,300,300)
+            const gradient = ctx.createLinearGradient(0,0,300,300)
+
+            gradient.addColorStop(0,"#9f9c94");
+            gradient.addColorStop(1,"rgb(142,141,135)");
+
+            ctx.fillStyle=gradient
+            ctx.fill();
+            ctx.drawImage(img, menu_1_x - 200 ,  menu_1_y - 200  , 400, 400);
+
+
+            ctx.restore();
+            
+            ctx.beginPath()
+            ctx.fillStyle = "#FFFFFF"
+            ctx.moveTo(this.x,this.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
+            ctx.fill()
     
-                gradient.addColorStop(0,"#9f9c94");
-                gradient.addColorStop(1,"rgb(142,141,135)");
-    
-                ctx.fillStyle=gradient
-                ctx.fill();
-                ctx.drawImage(img, this.x - 200 , this.y - harfRadius -250 , 400, 400);
-    
-    
-                ctx.restore();
-                
-                ctx.beginPath()
-                ctx.fillStyle = "#FFFFFF"
-                ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
-                ctx.fill()
-    
-            }
         }else if (menu_1.type === "text"){
             ctx.beginPath()
-            ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
-            ctx.arc(this.x,this.y,this.radius ,startAngle_2,endAngle_2);        
-            ctx.lineTo(smallCircle_endAngle_xy_2.x,smallCircle_endAngle_xy_2.y);
-            ctx.stroke();
-        }
+            ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_1,endAngle_1);  
+            ctx.lineTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
+            let text =  menu_1.name;
+            if(text.length>15){
+                text = text.substring(0,15);
+                text +="..";
+            }
 
+            ctx.fillStyle = "black"
+            ctx.fillText(text,menu_1_x,menu_1_y  );
+            ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
+            
+            ctx.stroke();
+
+            
+        }
+  
 
         if(menu_2.type === "image"){
-            const img = new Image();
-            img.src = "./practiceCanvas_logo.webp"
-            img.onload = () => {
-                ctx.save();
-                ctx.beginPath()
-                ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
-                ctx.arc(this.x,this.y,this.radius ,startAngle_1,endAngle_1);  
-                ctx.lineTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
-                ctx.moveTo(smallCircle_startAngle_xy_1.x,smallCircle_startAngle_xy_1.y);
-                ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
-                ctx.moveTo(smallCircle_endAngle_xy_1.x,smallCircle_endAngle_xy_1.y);
-                ctx.closePath();
-                ctx.clip();            
-                ctx.stroke();
-                
-                const gradient = ctx.createLinearGradient(0,0,300,300)
-    
-                gradient.addColorStop(0,"#9f9c94");
-                gradient.addColorStop(1,"rgb(142,141,135)");
-                
-                ctx.fillStyle=gradient
-                ctx.fill();
-                ctx.drawImage(img, this.x - 200 , this.y - harfRadius -250 , 400, 400);
-                
-                ctx.restore();
-                
-                ctx.beginPath()
-               
-    
-            }
+            const img = menu_2.img;
+            
+            ctx.save();
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_2,endAngle_2);  
+            ctx.lineTo(smallCircle_endAngle_xy_2.x,smallCircle_endAngle_xy_2.y);
+            ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_2 , endAngle_2 );
+            ctx.moveTo(smallCircle_endAngle_xy_2.x,smallCircle_endAngle_xy_2.y);
+            ctx.closePath();
+            ctx.clip();            
+            ctx.stroke();
+            
+            const gradient = ctx.createLinearGradient(0,0,300,300)
+
+            gradient.addColorStop(0,"#9f9c94");
+            gradient.addColorStop(1,"rgb(142,141,135)");
+            ctx.fillStyle=gradient
+            ctx.fill();
+            ctx.drawImage(img, menu_2_x -200 , menu_2_y -200 , 400, 400);
+            
+            ctx.restore();
+
+            ctx.beginPath()
+            ctx.fillStyle = "#FFFFFF"
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_2 , endAngle_2 );
+            ctx.fill()
+                        
 
         }else if(menu_2.type === "text"){
             ctx.beginPath()
@@ -137,42 +163,143 @@ export class Circle{
                 text = text.substring(0,15);
                 text +="..";
             }
+            ctx.fillStyle = "black"
             
-            ctx.fillText(text,this.x + this.smallRadius + this.radius/2 - this.radius/6 , this.y )
+            ctx.fillText(text,menu_2_x , menu_2_y);
+            ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_2 , endAngle_2 );
 
             ctx.stroke();
         }
 
+        if(menu_3.type === "image"){
+            const img = menu_3.img;
+            ctx.save();
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_3,endAngle_3);  
+            ctx.lineTo(smallCircle_endAngle_xy_3.x,smallCircle_endAngle_xy_3.y);
+            ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_3 , endAngle_3 );
+            ctx.moveTo(smallCircle_endAngle_xy_3.x,smallCircle_endAngle_xy_3.y);
+            ctx.closePath();
+            ctx.clip();            
+            ctx.stroke();
+            
+            const gradient = ctx.createLinearGradient(0,0,300,300)
+
+            gradient.addColorStop(0,"#9f9c94");
+            gradient.addColorStop(1,"rgb(142,141,135)");
+            
+            ctx.fillStyle=gradient
+            ctx.fill();
+            ctx.drawImage(img, menu_3_x - 200 , menu_3_y - 200 , 400, 400);
+            
+            ctx.restore();
+
+            ctx.beginPath()
+            ctx.fillStyle = "#FFFFFF"
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_3 , endAngle_3 );
+            ctx.fill();''
+               
+        }else if(menu_3.type === "text"){
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_3,endAngle_3);        
+            ctx.lineTo(smallCircle_endAngle_xy_3.x,smallCircle_endAngle_xy_3.y);
+            let text =  menu_3.name;
+            if(text.length>15){
+                text = text.substring(0,15);
+                text +="..";
+            }
+            ctx.fillStyle = "black"
+            ctx.fillText(text, menu_3_x , menu_3_y  );
+            ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_3 , endAngle_3 );
+            ctx.stroke();
+        }
+
         
+
+        if(menu_4.type === "image"){
+            const img = menu_4.img;
         
+            ctx.save();
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_4,endAngle_4);  
+            ctx.lineTo(smallCircle_endAngle_xy_4.x,smallCircle_endAngle_xy_4.y);
+            ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_4 , endAngle_4 );
+            ctx.moveTo(smallCircle_endAngle_xy_4.x,smallCircle_endAngle_xy_4.y);
+            ctx.closePath();
+            ctx.clip();            
+            ctx.stroke();
+            
+            const gradient = ctx.createLinearGradient(0,0,300,300)
+
+            gradient.addColorStop(0,"#9f9c94");
+            gradient.addColorStop(1,"rgb(142,141,135)");
+            
+            ctx.fillStyle=gradient
+            ctx.fill();
+            ctx.drawImage(img, menu_4_x - 200 , menu_4_y  - 200, 400, 400);
+            
+            ctx.restore();
+
+            ctx.beginPath()
+            ctx.fillStyle = "#FFFFFF"
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_4 , endAngle_4 );
+            ctx.fill()
+                
+               
+    
+
+        }else if(menu_4.type === "text"){
+            ctx.beginPath()
+            ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
+            ctx.arc(this.x,this.y,this.radius ,startAngle_4,endAngle_4);        
+            ctx.lineTo(smallCircle_endAngle_xy_4.x,smallCircle_endAngle_xy_4.y);
+            let text =  menu_4.name;
+            if(text.length>15){
+                text = text.substring(0,15);
+                text +="..";
+            }
+            ctx.fillStyle = "black"
+            ctx.fillText(text, menu_4_x  , menu_4_y   , this.y );
+            ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
+            ctx.arc(this.x,this.y,this.smallRadius,startAngle_4 , endAngle_4 );
+           
+ 
+            ctx.stroke();
+        }
+
+
 
         
         
 
-        ctx.beginPath()
-        ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
-        ctx.arc(this.x,this.y,this.radius ,startAngle_2,endAngle_2);        
-        ctx.lineTo(smallCircle_endAngle_xy_2.x,smallCircle_endAngle_xy_2.y);
-        ctx.stroke();
+        // ctx.beginPath()
+        // ctx.moveTo(smallCircle_startAngle_xy_2.x,smallCircle_startAngle_xy_2.y);
+        // ctx.arc(this.x,this.y,this.radius ,startAngle_2,endAngle_2);        
+        // ctx.lineTo(smallCircle_endAngle_xy_2.x,smallCircle_endAngle_xy_2.y);
+        // ctx.stroke();
 
-        ctx.beginPath()
-        ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
-        ctx.arc(this.x,this.y,this.radius ,startAngle_3,endAngle_3);        
-        ctx.lineTo(smallCircle_endAngle_xy_3.x,smallCircle_endAngle_xy_3.y);
-        ctx.stroke();
+        // ctx.beginPath()
+        // ctx.moveTo(smallCircle_startAngle_xy_3.x,smallCircle_startAngle_xy_3.y);
+        // ctx.arc(this.x,this.y,this.radius ,startAngle_3,endAngle_3);        
+        // ctx.lineTo(smallCircle_endAngle_xy_3.x,smallCircle_endAngle_xy_3.y);
+        // ctx.stroke();
         // 회전을위한 안보이는 부분
-        ctx.beginPath()
-        ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
-        ctx.arc(this.x,this.y,this.radius ,startAngle_4,endAngle_4);        
-        ctx.lineTo(smallCircle_endAngle_xy_4.x,smallCircle_endAngle_xy_4.y);
+        // ctx.beginPath()
+        // ctx.moveTo(smallCircle_startAngle_xy_4.x,smallCircle_startAngle_xy_4.y);
+        // ctx.arc(this.x,this.y,this.radius ,startAngle_4,endAngle_4);        
+        // ctx.lineTo(smallCircle_endAngle_xy_4.x,smallCircle_endAngle_xy_4.y);
 
         ctx.stroke();
-        
-        // 가운데 작은원 덮어쓰기 처리
-        ctx.fillStyle = "#FFFFFF"
-        ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_1 );
-        ctx.fill()
-        
+
+
+
         // ctx.beginPath()
         // ctx.arc(this.x,this.y,this.smallRadius,startAngle_1 , endAngle_3 );
         // ctx.stroke();
@@ -189,14 +316,41 @@ export class Circle{
     }
 
     menuIdxPlus(){
-        this.menuIdx++;
+        this.menuIdx= this.menuIdx + 1;
         if(this.menuIdx >= this.menuList.length){
             this.menuIdx = 0
         }
     }
 
 
+    mouseWheelDown(ctx){
+        if(this.mouseWheelDownFlag){
+            return
+        }else{
+            this.mouseWheelDownFlag = true;
+        }
+        window.requestAnimationFrame(this.circleDrawEvent.bind(this,ctx))
+    }
 
+    circleDrawEvent(ctx){
+        
+        if(this.eventAngle>= 90){
+            this.mouseWheelDownFlag = false;
+            this.eventAngle = 0;
+            this.menuIdxPlus();
+            this.circleDraw(ctx);
+        }else{
+            this.eventAngle += this.eventAngleIncrease;
+            
+            this.circleDraw(ctx);
+            window.requestAnimationFrame(this.circleDrawEvent.bind(this,ctx))    
+        } 
+        
+    }
+
+    mouseWheelUp(){
+
+    }
     
     // draw(ctx ,startAngle, endAngle){
     //     ctx.beginPath()
@@ -206,6 +360,16 @@ export class Circle{
     //     ctx.stroke();
         
     // }
+    
+
+    getCircleX(angle,radius,x){
+        return Math.cos(angle * Math.PI/180)*radius + x;
+    }
+
+    getCirCleY(angle,radius,y){
+        return Math.sin(angle * Math.PI/180)*radius + y
+    }
 
 
 }
+
