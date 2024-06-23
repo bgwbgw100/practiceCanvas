@@ -58,8 +58,10 @@ class App{
         console.log(deltaY);
         if(deltaY >0){
             this.circle.mouseWheelDown(this.ctx);
+        }else if(deltaY < 0){
+            this.circle.mouseWheelUp(this.ctx);
         }
-
+        
 
     }
 

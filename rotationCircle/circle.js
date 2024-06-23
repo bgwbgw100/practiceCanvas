@@ -12,7 +12,8 @@ export class Circle{
         this.menuIdx = 0;
         this.eventAngle = 0;
         this.eventAngleIncrease = 1;
-        this.mouseWheelDownFlag = false;
+        this.eventAngleDecrease = -1;
+        this.mouseWheelFlag = false;
 
     }
 
@@ -321,36 +322,64 @@ export class Circle{
             this.menuIdx = 0
         }
     }
+    menuIdxMinus(){
+        this.menuIdx= this.menuIdx - 1;
+        if(this.menuIdx < 0){
+            this.menuIdx = this.menuList.length-1
+        }
+    }
 
 
     mouseWheelDown(ctx){
-        if(this.mouseWheelDownFlag){
+        if(this.mouseWheelFlag){
             return
         }else{
-            this.mouseWheelDownFlag = true;
+            this.mouseWheelFlag = true;
         }
-        window.requestAnimationFrame(this.circleDrawEvent.bind(this,ctx))
+        window.requestAnimationFrame(this.circleDrawWheelDownEvent.bind(this,ctx))
     }
 
-    circleDrawEvent(ctx){
+    mouseWheelUp(ctx){
         
-        if(this.eventAngle>= 90){
-            this.mouseWheelDownFlag = false;
+        if(this.mouseWheelFlag){
+            return
+        }else{
+            this.mouseWheelFlag = true;
+        }
+        window.requestAnimationFrame(this.circleDrawWheelUpEvent.bind(this,ctx))
+    }
+
+    circleDrawWheelUpEvent(ctx){
+        
+        if(this.eventAngle <= -90){
+            this.mouseWheelFlag = false;
+            this.eventAngle = 0;
+            this.menuIdxMinus();
+            this.circleDraw(ctx);
+        }else{
+            this.eventAngle += this.eventAngleDecrease;
+            
+            this.circleDraw(ctx);
+            window.requestAnimationFrame(this.circleDrawWheelUpEvent.bind(this,ctx))    
+        } 
+        
+    }
+    circleDrawWheelDownEvent(ctx){
+        
+        if(this.eventAngle >= 90){
+            this.mouseWheelFlag = false;
             this.eventAngle = 0;
             this.menuIdxPlus();
             this.circleDraw(ctx);
         }else{
             this.eventAngle += this.eventAngleIncrease;
-            
             this.circleDraw(ctx);
-            window.requestAnimationFrame(this.circleDrawEvent.bind(this,ctx))    
+            window.requestAnimationFrame(this.circleDrawWheelDownEvent.bind(this,ctx))    
         } 
         
     }
 
-    mouseWheelUp(){
-
-    }
+   
     
     // draw(ctx ,startAngle, endAngle){
     //     ctx.beginPath()
