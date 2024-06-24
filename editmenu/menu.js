@@ -7,6 +7,7 @@ export class Menu {
         this.isDrag = false;
         this.screenX = 0;
         this.mouseDownX = 0;
+        this.screenMax = menuList.length * 1650 -1650
         // ---
         this.radius_1 = 100;
         this.radius_2 = 70;
@@ -14,10 +15,10 @@ export class Menu {
         this.cirCleColor = "#161e38";
         this.lineThickness = 10 //선 굵기 * 2
         
-        this.cirCleBetweenX_1 = 700; // 첫쩃줄 노드 사이
-        this.cirCleBetweenX_2 = 50; // 둘쨋줄 노드 사이
-        this.cirCleBetweenX_3 = 120; // 3쨋줄 노드 사이
-        this.defalutX = 400 
+        this.cirCleBetweenX_1 = 1650; // 첫쩃줄 노드 사이
+        this.cirCleBetweenX_2 = 400; // 둘쨋줄 노드 사이
+        this.cirCleBetweenX_3 = 100; // 3쨋줄 노드 사이
+        this.defalutX = 800 
         this.defalutY = 150;
         
         this.nodeXY = {
@@ -30,6 +31,8 @@ export class Menu {
         this.x1 =0;
         this.x2 =0;
         this.x3 =0;
+
+        this.isInput = false;
 
     }
 
@@ -46,7 +49,7 @@ export class Menu {
 
     moveNode(nodeXY){
         nodeXY.x1 = nodeXY.x1 + this.cirCleBetweenX_1;
-        nodeXY.x2 = nodeXY.x1 - 200;
+        nodeXY.x2 = nodeXY.x1 - 550;
         nodeXY.y2 = nodeXY.y1 + 250;
         nodeXY.x3 = nodeXY.x2 - 150;
         nodeXY.y3 = nodeXY.y2 + 250;
@@ -62,6 +65,18 @@ export class Menu {
         
     }
 
+    resizeDraw() {
+        
+        if(this.isInput){
+            return;
+        }else{
+            this.drawInit();
+            this.draw();
+        }
+
+
+
+    }
 
     draw(){
         const menuList = this.menuList;
@@ -119,7 +134,7 @@ export class Menu {
 
     mouseMoveDrawPlus(dx){
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-        this.screenX -= 3.5; 
+        this.screenX -= 20; 
         this.mouseDownX = dx
 
         this.drawInit();
@@ -129,7 +144,7 @@ export class Menu {
     }   
     mouseMoveDrawMinus(dx){
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-        this.screenX += 3.5; 
+        this.screenX += 20; 
         this.mouseDownX = dx
 
         this.drawInit();
@@ -138,19 +153,30 @@ export class Menu {
     } 
     
     mouseMove(canvas,event){
+        if(this.isInput){
+            return;
+        }
+
         if(this.isDrag){
             const dx = event.clientX;
-            if(this.mouseDownX - dx > 0){
-                
-                window.requestAnimationFrame(this.mouseMoveDrawPlus.bind(this,dx));
-            };
-
-            if(this.mouseDownX - dx< 0){
-                if( this.screenX >= 0){
+            if(this.mouseDownX - dx < 0){
+           
+                if( this.screenX < 0){
                     this.screenX = 0;
                     return;
                 }
+                window.requestAnimationFrame(this.mouseMoveDrawPlus.bind(this,dx));
+            };
+
+            if(this.mouseDownX - dx > 0){
+               if(this.screenX > this.screenMax){
+                    this.screenX = this.screenMax
+                  
+                    return;
+               }
+               console.log(this.screenX)
                 window.requestAnimationFrame(this.mouseMoveDrawMinus.bind(this,dx));
+            
             }
             
             return;
@@ -161,6 +187,10 @@ export class Menu {
     }
 
     circleMouseOn(canvas,event){
+        if(this.isInput){
+            return;
+        }
+
         const dx = event.clientX;
         const dy = event.clientY;
         const menuList = this.menuList;
@@ -202,7 +232,7 @@ export class Menu {
 
     text(text,x,y,textLength){
         if(textLength){
-            text = text.substring(0,textLength) + "..."
+            if(text.length >textLength ) text = text.substring(0,textLength) + "..."
         }
 
         this.ctx.beginPath();
@@ -212,8 +242,6 @@ export class Menu {
 
         this.ctx.fillStyle="#FFFFFF"
         this.ctx.fillText(text,x,y)
-        
-        
         
         
     }
@@ -232,13 +260,18 @@ export class Menu {
     rect(x1,y1,x2,y2){
         
         const ctx = this.ctx;
-        ctx.fillStyle = this.cirCleColor;
+        ctx.beginPath();
+        
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = this.cirCleColor;
         const thickness = this.lineThickness;
-        ctx.moveTo(x1-thickness,y1);
-        ctx.lineTo(x1+thickness,y1)
-        ctx.lineTo(x2+thickness,y2);
-        ctx.lineTo(x2-thickness,y2);
-        ctx.fill();
+        
+        
+        ctx.moveTo(x1,y1);
+
+        ctx.lineTo(x2,y2);
+        ctx.stroke()
+
     
     
     }
@@ -249,26 +282,59 @@ export class Menu {
 
 
     mouseDown(event){
+        if(this.isInput){
+            return;
+        }
+
         const dx = event.clientX;
         const dy = event.clientY;
         const menuList = this.menuList;
         let isCircleInCursor = false;
+        let clickCircle = null;
+        let isBreak = false;
 
         for (const menu of menuList) {
+            if(isBreak) break;
+
             const firstObj = menu.first
             isCircleInCursor = this.isCircleInCursor(firstObj,dx,dy,this.radius_1) ? true : isCircleInCursor;
-
+            clickCircle = isCircleInCursor === true ? firstObj : clickCircle
+            if(isCircleInCursor) {
+                isBreak = true;
+                break;
+            }
             for(const secondObj of firstObj.second){
-                isCircleInCursor = this.isCircleInCursor(firstObj,dx,dy,this.radius_2) ? true : isCircleInCursor;
-
-                for(const thirdObj of secondObj.third){
-                    isCircleInCursor = this.isCircleInCursor(firstObj,dx,dy,this.radius_3) ? true : isCircleInCursor;
+                if(isBreak) break;
+                isCircleInCursor = this.isCircleInCursor(secondObj,dx,dy,this.radius_2) ? true : isCircleInCursor;
+                clickCircle = isCircleInCursor === true ? secondObj : clickCircle
+                if(isCircleInCursor) {
+                    isBreak = true;
+                    break;
                 }
+                
+                for(const thirdObj of secondObj.third){
+                    if(isBreak) break;
+                    isCircleInCursor = this.isCircleInCursor(thirdObj,dx,dy,this.radius_3) ? true : isCircleInCursor;
+                    clickCircle = isCircleInCursor === true ? thirdObj : clickCircle
+                    if(isCircleInCursor) {
+                        isBreak = true;
+                        break;
+                    }
+                }
+                
             }
         }
 
         if(isCircleInCursor){
+
             console.log("circleClickEvent")
+            
+            this.circleClickEvent(clickCircle)
+
+
+            // this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+            // this.drawInit()
+            // this.draw()
             return;
         }
         this.mouseDownX = dx;
@@ -278,6 +344,7 @@ export class Menu {
     }
 
     mouseUp(event){
+
         this.isDrag = false;
     }
 
@@ -286,8 +353,97 @@ export class Menu {
         if(radius  >=distance){
             return true;
         }
-
         return false;
     }
+
+    circleClickEvent(circle){
+        this.canvas.style.cursor = '';
+        this.isInput = true;
+        this.isDrag = false;
+        
+        this.circleClickEventDraw(circle);
+
+    }
+    
+    circleClickEventDraw(circle){
+                 
+        console.table(circle)
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.cirCle(this.canvas.width/4,this.canvas.height/4,200)
+
+
+
+        const input = document.createElement("input");
+        const width = 300;
+        const height = 50;
+        input.className = "canvasInput";
+        input.style.position = "absolute";
+        input.style.top = this.canvas.height/4-height/2 + "px"
+        input.style.left = this.canvas.width/4-width/2 + "px"
+        input.style.width = width+"px"
+        input.style.height = height + "px"
+        input.style.fontSize = "24px"
+        input.value = circle.name;
+        
+        const cancleButton = document.createElement("button");
+        const saveButton = document.createElement("button");
+        const buttonList = [];
+        const buttonWidth = 140;
+        const buttonHeight = 35;
+        buttonList.push(cancleButton);
+        buttonList.push(saveButton);
+
+        for (const button of buttonList) {
+            button.style.position = "absolute";
+            button.style.width = buttonWidth+"px";
+            button.style.height = buttonHeight + "px";
+        }
+        cancleButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        cancleButton.style.left = this.canvas.width/4-width/2 + "px";
+        cancleButton.innerText ="취소";
+        
+        saveButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        saveButton.style.left = this.canvas.width/4-width/2 + buttonWidth + 20 +"px";
+        saveButton.innerText ="저장";
+        
+        cancleButton.addEventListener("click",this.clickCancleButton.bind(this,input,cancleButton,saveButton))
+        saveButton.addEventListener("click",this.clickSaveButton.bind(this,input,cancleButton,saveButton,circle))
+        
+        document.body.appendChild(input);
+        document.body.appendChild(cancleButton);
+        document.body.appendChild(saveButton);
+        
+
+
+
+        
+    }
+
+    clickCancleButton(input,cancleButton,saveButton){
+        input.remove();
+        cancleButton.remove();
+        saveButton.remove();
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.drawInit()
+        this.draw();
+        this.isInput = false;
+    }
+
+    clickSaveButton(input,cancleButton,saveButton,cirCle){
+        // save 로직 
+        
+        //성공
+        cirCle.name = input.value
+
+        // 후처리
+        input.remove();
+        cancleButton.remove();
+        saveButton.remove();
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.drawInit()
+        this.draw();
+        this.isInput = false;
+    }
+
 
 }

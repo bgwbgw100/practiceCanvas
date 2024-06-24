@@ -29,8 +29,7 @@ class App{
 
         
         this.ctx.clearRect(0,0,this.stageWidth,this.stageHeight);
-        this.menu.drawInit();
-        this.menu.draw();
+        this.menu.resizeDraw()
     }
 
 }
@@ -41,65 +40,332 @@ window.onload = ()=>{
             name : "첫번쨰 메뉴 뎁스_1",
             engName : "first_1"
             ,type : "menu"
-            ,second : [{
+            ,second : [
+                {
                 name : "두번째 메뉴 뎁스",
                 engName : "second_1",
                 type : "menu"
-                ,third : [{
+                ,third : [
+                    {
                     name : "세번째 메뉴 뎁스",
                     engName : "third_1",
                     type : "board"
-                }
-                ,
-                {
-                    name : "3333333",
-                    engName : "3_1",
-                    type : "menu",
-                    third  :[
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
 
-                    ]
-                }
-                ,
-                {
-                    name : "3333333",
-                    engName : "3_two",
-                    type : "menu",
-                    third  :[
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
 
-                    ]
-                }
-                ,
-                {
-                    name : "3333333",
-                    engName : "3_two",
-                    type : "menu",
-                    third  :[
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
 
-                    ]
-                }
-            
+                        ]
+                    }
                 ] 
-            },]
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+        ]
         },
     },
     {
         first : {
-            name : "첫번쨰 메뉴 뎁스_2",
-            engName : "first_2"
+            name : "첫번쨰 메뉴 뎁스_1",
+            engName : "first_1"
             ,type : "menu"
-            ,second : [{
-                name : "두번째 메뉴 뎁스_2",
-                engName : "second_2",
+            ,second : [
+                {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
                 type : "menu"
-                ,third : [{
-                    name : "세번째 메뉴 뎁스_2",
-                    engName : "third_2",
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
                     type : "board"
-                }]
-                 
-            },]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+            {
+                name : "두번째 메뉴 뎁스",
+                engName : "second_1",
+                type : "menu"
+                ,third : [
+                    {
+                    name : "세번째 메뉴 뎁스",
+                    engName : "third_1",
+                    type : "board"
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_1",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                    ,
+                    {
+                        name : "3333333",
+                        engName : "3_two",
+                        type : "menu",
+                        third  :[
+
+                        ]
+                    }
+                ] 
+            },
+        ]
         },
-    },]
+    },
+    ]
 
 
     new App(menuList)
