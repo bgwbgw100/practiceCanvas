@@ -91,8 +91,11 @@ export class Menu {
             
             firstObj.x = nodeXY.x1;
             firstObj.y = nodeXY.y1;
-
+            
+            
             for(const secondObj of firstObj.second){
+                
+
                 secondObj.x = nodeXY.x2;
                 secondObj.y = nodeXY.y2;
 
@@ -110,16 +113,26 @@ export class Menu {
                     this.text(thirdObj.name , nodeXY.x3, nodeXY.y3, 5);
                     this.thirdMoveNode(nodeXY);
                 }
-
+                if(secondObj.third.length<4){
+                    this.addDraw(nodeXY.x3,nodeXY.y3,this.radius_3)
+                    //원 추가 기능
+                }
                 //after
                 this.text(secondObj.name ,nodeXY.x2 , nodeXY.y2,6);
                 this.secondMoveNode(nodeXY);
             }
- 
+            if(firstObj.second.length<4){
+                //원 추가 기능
+                this.addDraw(nodeXY.x2,nodeXY.y2,this.radius_2)
+            }
+
+
              // after
             this.text(firstObj.name ,nodeXY.x1,nodeXY.y1,9) // 선이그려진후 text를 그려 선에 가려지지 않게 처리
             this.moveNode(nodeXY)
         }
+
+        this.addMenuDraw()
 
         // this.cirCle(x1,y1,this.radius_1);
         // this.rect(x1,y1,x2,y2);
@@ -127,10 +140,20 @@ export class Menu {
         // this.cirCle(x2,y2,this.radius_2);
         // this.rect(x2,y2,x3,y3);
         // this.cirCle(x3,y3,this.radius_3);
-
         // this.cirCle(1100,150,this.radius_1);
         
     }
+
+    addDraw(x,y, radius){
+        radius = radius-15;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x-radius,y)
+        this.ctx.lineTo(x+radius,y)
+        this.ctx.moveTo(x,y-radius)
+        this.ctx.lineTo(x,y+radius);
+        this.ctx.stroke()
+    }
+
 
     mouseMoveDrawPlus(dx){
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
@@ -174,7 +197,7 @@ export class Menu {
                   
                     return;
                }
-               console.log(this.screenX)
+               
                 window.requestAnimationFrame(this.mouseMoveDrawMinus.bind(this,dx));
             
             }
@@ -182,7 +205,11 @@ export class Menu {
             return;
         }
 
-        this.circleMouseOn(canvas,event);            
+        if(this.circleMouseOn(canvas,event)){
+            return
+        };            
+
+        if(this.addMenuMouseMove(event)) return;
         
     }
 
@@ -199,27 +226,68 @@ export class Menu {
         for (const menu of menuList) {
             const firstObj = menu.first
             
-            if(this.setCircleCursor(firstObj,dx,dy,this.radius_1,canvas)) return;
-
+            if(this.setCircleCursor(firstObj,dx,dy,this.radius_1,canvas)) return true;
+            
             for(const secondObj of firstObj.second){
       
-                if(this.setCircleCursor(secondObj,dx,dy,this.radius_2,canvas)) return;
+                if(this.setCircleCursor(secondObj,dx,dy,this.radius_2,canvas)) return true;
+
+               
 
                 for(const thirdObj of secondObj.third){
                     
-                    if(this.setCircleCursor(thirdObj,dx,dy,this.radius_3,canvas)) return;
+                    if(this.setCircleCursor(thirdObj,dx,dy,this.radius_3,canvas)) return true;
 
                 }
+                
+                if(secondObj.third.length === 0){
+                    const obj = {
+                        x : secondObj.x - 150,
+                        y : secondObj.y + 250
+                    }
+                    
+                    if(this.setAddCursor(dx,dy,obj,this.radius_3,0)) return true
+             
+                }else if(secondObj.third.length < 4){
+                    const length = secondObj.third.length;
+                    const thirdObj = secondObj.third[length-1];
+                    if(this.setAddCursor(dx,dy,thirdObj,this.radius_3,this.cirCleBetweenX_3)) return true
+                }
 
+            }
+            if(firstObj.second.length === 0){
+                const obj = {
+                    x : firstObj.x - 550,
+                    y : firstObj.y + 250
+                }
+                if(this.setAddCursor(dx,dy,obj,this.radius_2,this.cirCleBetweenX_2)) return true
+                
+            }else if(firstObj.second.length < 4){
+                
+                const length = firstObj.second.length;
+                const secondObj = firstObj.second[length-1];
+                if(this.setAddCursor(dx,dy,secondObj,this.radius_2,this.cirCleBetweenX_2)) return true
             }
 
         }
 
         canvas.style.cursor = '';
-
+        return false;
     }    
 
+    setAddCursor(dx,dy, obj,radius,between){
+       
+        radius = radius-15;
+        if(obj.x + between -radius < dx && dx < obj.x + between + radius   && obj.y - radius < dy && dy < obj.y  + radius ){
+            this.canvas.style.cursor = 'pointer';            
+            return true;
+        }else{
+            false
+        }
+    }
+
     setCircleCursor(obj,dx,dy,radius ,canvas) {
+    
         const distance = Math.sqrt( (obj.x - dx)*(obj.x - dx) + (obj.y - dy)*(obj.y - dy));
         if(radius  >=distance){
             canvas.style.cursor = 'pointer';
@@ -266,7 +334,6 @@ export class Menu {
         ctx.strokeStyle = this.cirCleColor;
         const thickness = this.lineThickness;
         
-        
         ctx.moveTo(x1,y1);
 
         ctx.lineTo(x2,y2);
@@ -303,6 +370,7 @@ export class Menu {
                 isBreak = true;
                 break;
             }
+            
             for(const secondObj of firstObj.second){
                 if(isBreak) break;
                 isCircleInCursor = this.isCircleInCursor(secondObj,dx,dy,this.radius_2) ? true : isCircleInCursor;
@@ -321,8 +389,48 @@ export class Menu {
                         break;
                     }
                 }
+
+                if(secondObj.third.length === 0){
+                    const obj = {
+                        x : secondObj.x - 150,
+                        y : secondObj.y + 250
+                    }
+                   
+                    if(this.setAddCursor(dx,dy,obj,this.radius_3,0)){
+                        console.log("asd")
+                        this.newChildMenu(secondObj,3);
+                        return;
+                    }
+                }else if(secondObj.third.length < 4){
+                    const length = secondObj.third.length;
+                    const thirdObj = secondObj.third[length-1];
+                  
+                    if(this.setAddCursor(dx,dy,thirdObj,this.radius_3,this.cirCleBetweenX_3)){
+                        this.newChildMenu(secondObj,3);
+                        return;
+                    }
+                }
                 
             }
+            if(firstObj.second.length === 0){
+                const obj = {
+                    x : firstObj.x - 550,
+                    y : firstObj.y + 250
+                }
+              
+                if(this.setAddCursor(dx,dy,obj,this.radius_2,0)){
+                    this.newChildMenu(firstObj,2);
+                    return;
+                }
+            }else if(firstObj.second.length < 4){
+                const length = firstObj.second.length;
+                const secondObj = firstObj.second[length-1];
+                if(this.setAddCursor(dx,dy,secondObj,this.radius_2,this.cirCleBetweenX_2)){
+                    this.newChildMenu(firstObj,2);
+                    return;
+                }
+            }
+
         }
 
         if(isCircleInCursor){
@@ -340,6 +448,78 @@ export class Menu {
         this.mouseDownX = dx;
 
         this.isDrag = true;
+
+    }
+
+    newChildMenu(obj,level){
+        this.canvas.style.cursor = '';
+        this.isInput = true;
+        this.isDrag = false;
+
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.cirCle(this.canvas.width/4,this.canvas.height/4,200)
+
+        const input = document.createElement("input");
+        const width = 300;
+        const height = 50;
+        input.className = "canvasInput";
+        input.style.position = "absolute";
+        input.style.top = this.canvas.height/4-height/2 + "px"
+        input.style.left = this.canvas.width/4-width/2 + "px"
+        input.style.width = width+"px"
+        input.style.height = height + "px"
+        input.style.fontSize = "24px"
+        
+        const cancleButton = document.createElement("button");
+        const saveButton = document.createElement("button");
+        const buttonList = [];
+        const buttonWidth = 140;
+        const buttonHeight = 35;
+        buttonList.push(cancleButton);
+        buttonList.push(saveButton);
+
+        for (const button of buttonList) {
+            button.style.position = "absolute";
+            button.style.width = buttonWidth+"px";
+            button.style.height = buttonHeight + "px";
+        }
+        cancleButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        cancleButton.style.left = this.canvas.width/4-width/2 + "px";
+        cancleButton.innerText ="취소";
+        
+        saveButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        saveButton.style.left = this.canvas.width/4-width/2 + buttonWidth + 20 +"px";
+        saveButton.innerText ="저장";
+        
+        cancleButton.addEventListener("click",this.clickCancleButton.bind(this,input,cancleButton,saveButton))
+        saveButton.addEventListener("click",this.clickChildSaveButton.bind(this,input,cancleButton,saveButton,obj,level))
+        
+        document.body.appendChild(input);
+        document.body.appendChild(cancleButton);
+        document.body.appendChild(saveButton);
+    }
+
+    clickChildSaveButton(input,cancleButton,saveButton,obj,level){
+        const newMenu = {
+            name : input.value,
+            type : "menu",
+            engName : "engName",
+            
+        }
+        if(level === 2){
+            newMenu.third = [];
+            obj.second.push(newMenu);
+        }else if(level === 3){
+            obj.third.push(newMenu);
+        }
+        this.isInput = false;
+        input.remove();
+        cancleButton.remove();
+        saveButton.remove();
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.drawInit()
+        this.draw();
+        
 
     }
 
@@ -367,7 +547,6 @@ export class Menu {
     
     circleClickEventDraw(circle){
                  
-        console.table(circle)
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
         this.cirCle(this.canvas.width/4,this.canvas.height/4,200)
 
@@ -413,11 +592,10 @@ export class Menu {
         document.body.appendChild(cancleButton);
         document.body.appendChild(saveButton);
         
-
-
-
         
     }
+
+
 
     clickCancleButton(input,cancleButton,saveButton){
         input.remove();
@@ -445,5 +623,106 @@ export class Menu {
         this.isInput = false;
     }
 
+    addMenuDraw(){
+        this.ctx.beginPath()
+        this.ctx.moveTo(this.canvas.width/2 -50 , 80 )
+        this.ctx.lineTo(this.canvas.width/2- 150 , 80 )
+        this.ctx.moveTo(this.canvas.width/2 -100 , 30 )
+        this.ctx.lineTo(this.canvas.width/2 -100 , 130 )
+        this.ctx.stroke()
+    }
+
+    addMenuMouseMove(event){
+        const dx = event.clientX;
+        const dy = event.clientY;
+        if(this.canvas.width/2 -150 < dx  && dx < this.canvas.width/2- 50 &&  30 < dy && dy <  130){
+            this.canvas.style.cursor = "pointer";
+            return true;
+
+        }else{
+            this.canvas.style.cursor = '';
+            return false;
+        }
+    }
+
+    addMenuMouseClick(){
+
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.cirCle(this.canvas.width/4,this.canvas.height/4,200)
+
+        const input = document.createElement("input");
+        const width = 300;
+        const height = 50;
+        input.className = "canvasInput";
+        input.style.position = "absolute";
+        input.style.top = this.canvas.height/4-height/2 + "px"
+        input.style.left = this.canvas.width/4-width/2 + "px"
+        input.style.width = width+"px"
+        input.style.height = height + "px"
+        input.style.fontSize = "24px"
+        
+        const cancleButton = document.createElement("button");
+        const saveButton = document.createElement("button");
+        const buttonList = [];
+        const buttonWidth = 140;
+        const buttonHeight = 35;
+        buttonList.push(cancleButton);
+        buttonList.push(saveButton);
+
+        for (const button of buttonList) {
+            button.style.position = "absolute";
+            button.style.width = buttonWidth+"px";
+            button.style.height = buttonHeight + "px";
+        }
+        cancleButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        cancleButton.style.left = this.canvas.width/4-width/2 + "px";
+        cancleButton.innerText ="취소";
+        
+        saveButton.style.top = this.canvas.height/4-height/2  +height + 20 + "px";
+        saveButton.style.left = this.canvas.width/4-width/2 + buttonWidth + 20 +"px";
+        saveButton.innerText ="저장";
+        
+        cancleButton.addEventListener("click",this.clickCancleButton.bind(this,input,cancleButton,saveButton))
+        saveButton.addEventListener("click",this.clickNewSaveButton.bind(this,input,cancleButton,saveButton))
+        
+        document.body.appendChild(input);
+        document.body.appendChild(cancleButton);
+        document.body.appendChild(saveButton);
+    }
+
+    clickNewSaveButton(input,cancleButton,saveButton){
+        
+        const menu = { first :
+            {
+                name : input.value,
+                engName : "first_1"
+                ,type : "menu"
+                ,second :[]
+            }
+        }
+        this.menuList.push(menu)
+        console.table(this.menuList)
+        input.remove();
+        cancleButton.remove();
+        saveButton.remove();
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.drawInit()
+        this.draw();
+        this.isInput = false;
+        this.screenMax = this.menuList.length * 1650 -1650
+
+    }
+    
+    mouseClick(event){
+        const dx = event.clientX;
+        const dy = event.clientY;
+
+        if(this.canvas.width/2 -150 < dx  && dx < this.canvas.width/2- 50 &&  30 < dy && dy <  130){
+            this.isInput = true;
+            this.canvas.style.cursor = "";
+            this.addMenuMouseClick()
+        }
+
+    }
 
 }

@@ -15,6 +15,7 @@ class App{
         this.canvas.addEventListener("mousemove",this.menu.mouseMove.bind(this.menu,this.canvas))
         this.canvas.addEventListener("mousedown",this.menu.mouseDown.bind(this.menu));
         this.canvas.addEventListener("mouseup",this.menu.mouseUp.bind(this.menu));
+        this.canvas.addEventListener("click",this.menu.mouseClick.bind(this.menu))
 
     }
 
@@ -41,7 +42,7 @@ window.onload = ()=>{
             engName : "first_1"
             ,type : "menu"
             ,second : [
-                {
+            {
                 name : "두번째 메뉴 뎁스",
                 engName : "second_1",
                 type : "menu"
@@ -60,24 +61,8 @@ window.onload = ()=>{
 
                         ]
                     }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_two",
-                        type : "menu",
-                        third  :[
 
-                        ]
-                    }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_two",
-                        type : "menu",
-                        third  :[
-
-                        ]
-                    }
+                  
                 ] 
             },
             {
@@ -108,54 +93,7 @@ window.onload = ()=>{
 
                         ]
                     }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_two",
-                        type : "menu",
-                        third  :[
-
-                        ]
-                    }
-                ] 
-            },
-            {
-                name : "두번째 메뉴 뎁스",
-                engName : "second_1",
-                type : "menu"
-                ,third : [
-                    {
-                    name : "세번째 메뉴 뎁스",
-                    engName : "third_1",
-                    type : "board"
-                    }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_1",
-                        type : "menu",
-                        third  :[
-
-                        ]
-                    }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_two",
-                        type : "menu",
-                        third  :[
-
-                        ]
-                    }
-                    ,
-                    {
-                        name : "3333333",
-                        engName : "3_two",
-                        type : "menu",
-                        third  :[
-
-                        ]
-                    }
+             
                 ] 
             },
             {
